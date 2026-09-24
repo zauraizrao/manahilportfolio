@@ -1,0 +1,11 @@
+'use client';
+import Image from 'next/image';
+import {AnimatePresence, motion, useReducedMotion} from 'framer-motion';
+import {useEffect, useState} from 'react';
+import {screenshotUrl} from '../data/content';
+
+export function Skeleton({className=''}){return <span className={`skeleton ${className}`} aria-hidden="true"/>}
+export function Reveal({children,className='',delay=0}){const reduce=useReducedMotion();return <motion.div className={className} initial={reduce?false:{opacity:0,y:24}} whileInView={reduce?{}:{opacity:1,y:0}} viewport={{once:true,amount:.18}} transition={{duration:.65,delay,ease:[.22,1,.36,1]}}>{children}</motion.div>}
+export function ImageWithFallback({project,featured=false}){const [loaded,setLoaded]=useState(false);const [error,setError]=useState(false);const source=project.image||screenshotUrl(project.url);return <div className={`project-image ${featured?'featured-image':''}`}>{!loaded&&!error&&<Skeleton className="image-skeleton"/>}{error?<div className="browser-fallback"><div className="browser-top"><i/><i/><i/><span>{new URL(project.url).hostname}</span></div><div className="fallback-copy"><small>{project.category}</small><h3>{project.title}</h3></div></div>:<Image src={source} alt={`${project.title} website screenshot`} fill unoptimized onLoad={()=>setLoaded(true)} onError={()=>setError(true)} className={loaded?'loaded':''}/>}</div>}
+export function PageLoader(){const [show,setShow]=useState(true);useEffect(()=>{const t=setTimeout(()=>setShow(false),1050);return()=>clearTimeout(t)},[]);return <AnimatePresence>{show&&<motion.div className="page-loader" initial={{opacity:1}} exit={{opacity:0}}><div className="loader-inner"><div className="loader-head"><Skeleton/><Skeleton/></div><div className="loader-lines"><Skeleton/><Skeleton/><Skeleton/></div><div className="loader-block"><Skeleton/></div></div></motion.div>}</AnimatePresence>}
+export function Icon({name}){const paths={arrow:<><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></>,menu:<><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></>,close:<><path d="m6 6 12 12"/><path d="m18 6-12 12"/></>};return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="square">{paths[name]}</svg>}

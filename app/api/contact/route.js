@@ -10,7 +10,13 @@ export async function POST(request) {
     const {SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS} = process.env;
     const recipient = process.env.SMTP_TO || 'manahilhassan.1230@gmail.com';
     if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-      return Response.json({error: 'Contact email service is not configured yet.'}, {status: 503});
+      const fallback = await fetch(`https://formsubmit.co/ajax/${recipient}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+        body: JSON.stringify({name: name.trim(), email: email.trim(), message: message.trim(), _subject: 'New portfolio enquiry'})
+      });
+      if (!fallback.ok) return Response.json({error: 'Email delivery is not available right now.'}, {status: 502});
+      return Response.json({success: true, fallback: true});
     }
 
     const transporter = nodemailer.createTransport({

@@ -21,7 +21,7 @@ All editable site content lives in `data/content.js`: contact details, navigatio
 
 ## Contact form SMTP setup
 
-The form sends securely through the server-side `/api/contact` route using Nodemailer. Add these environment variables locally in `.env.local` and in your Vercel project settings:
+The form sends through the server-side `/api/contact` route using Nodemailer when SMTP variables are configured. Add these environment variables locally in `.env.local` and in your Vercel project settings:
 
 ```env
 SMTP_HOST=smtp.example.com
@@ -33,3 +33,5 @@ SMTP_TO=manahilhassan.1230@gmail.com
 ```
 
 Use an app password when your email provider requires two-factor authentication. Never commit `.env.local` or SMTP credentials. After adding the variables, form submissions are delivered to `manahilhassan.1230@gmail.com`; the visitor's email is set as `Reply-To` so you can respond directly.
+
+If SMTP variables are not configured, the route falls back to FormSubmit. FormSubmit may send a one-time activation email to `manahilhassan.1230@gmail.com` before it delivers enquiries.
